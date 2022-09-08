@@ -1,3 +1,5 @@
-module.exports = () => {
-  // ...
+const sayHi = () => console.log('Hello');
+
+module.exports = {
+  sayHi,
 };
