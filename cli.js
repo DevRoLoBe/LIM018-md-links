@@ -1,3 +1,2 @@
-const { sayHi } = require('./index');
-
-sayHi()
+// const { sayHi } = require('./index');
+// console.log("holaaa");
