@@ -1,77 +1,35 @@
-const path = require('path');
-const fs = require('fs');
-const fetch = require('node-fetch');
-const { error } = require('console');
-const paths = './miReadme.md';
+const { fstat } = require("graceful-fs");
+const {
+  getAbsolutePath,
+  isMd,
+  readFile,
+  extractLinks,
+  validateLinks,
+  pathExists,
+} = require("./funciones.js");
 
-// ver si la ruta es absoluta
-// convertir la ruta relativa en  absoluta
-const getAbsolutePath = (pathToResolve) => {
-  return path.isAbsolute(pathToResolve) ?pathToResolve : path.resolve(pathToResolve)
-}
-const isMd = (paths) => {
-  const pathExists = fs.existsSync(paths);
-  if(!pathExists){
-    console.error('La ruta no existe!')
-    return
-  }
-
-  const pathAbsolute = getAbsolutePath(paths)
-
-  // extraer la extencion que tiene el archivo
-  const pathMd = path.extname(pathAbsolute);
-  if(pathMd == '.md'){
-    return pathAbsolute
-  } else console.log('El archivo no es md');
-}
-
-// console.log(isMd(path, {validate: false, stats: true}));
-
-const readFile = (file) => {
-  return fs.readFileSync(file,'utf-8');
-}
-
-const extractLinks = (paths) => {
-  const regExp = /\[(.+)\]\((https?:\/\/.+)\)/gi;
-  const fileMd = isMd(paths);
-  const fileLinks = readFile(fileMd).match(regExp);
-  const newFilelinks= fileLinks.map((links) => {
-    const textLink = /\[[^\s]+(.+?)\]/gi;
-    const matchText = links.match(textLink)
-    const httpsLink = /\((https?.+?)\)/gi;
-    const matchHttp = links.match(httpsLink);
-    const objLinks = {
-      href : matchHttp[0].slice(1,-1),
-      text: matchText[0].slice(1,-1),
-      file: paths
+const mdlinks = (path, options) => {
+  return new Promise((resolve, reject) => {
+    if (!pathExists) {
+      reject(new Error("La ruta ingresada no existe"));
     }
-    return objLinks;
-});
-return newFilelinks;
-}
+    // chequear que la ruta sea absoluta
+    const absolut = getAbsolutePath(path);
 
-  const statusLinks = (paths) => {
-    const arrayObjects= extractLinks(paths);
-    const promesas = arrayObjects.map((objLink) => {
-      return fetch(objLink.href)
-        .then(res => {
-          if(res.status < 400){
-            const objLinks2 = {
-              //ts-ignore
-              ...objLink,
-              status: res.status,
-              statusText: res.statusText
-            }
-            return objLinks2
-          }
-        })
-        .catch( (err) => {
-          console.log(err)
-        })
-    })
-    Promise.all(promesas).then((result) =>{
-      console.log(result)
-    });
-  }
-  statusLinks(paths);
-module.exports = { getAbsolutePath }
+    //TODO: check if absolut is a directory or a file
+    
+
+    // valida si el archivo es md
+    if (!isMd(absolut)) {
+      reject(new Error("No se encontró archivos con extencion .md"));
+    }
+
+    if (readFile(path)) {
+      reject(new Error("No se puede leer el archivo"));
+    }
+  });
+};
+
+mdlinks("./miReadme.md").then((result) => {
+  console.log(result);
+});
