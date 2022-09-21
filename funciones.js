@@ -1,7 +1,6 @@
 const path = require("path");
 const fs = require("fs");
 const fetch = require("node-fetch");
-const { error } = require("console");
 const ejmpRut = "./miReadme.md";
 
 /**
@@ -41,7 +40,7 @@ const extractLinks = (pathAbsolut) => {
   const regExp = /\[(.+)\]\((https?:\/\/.+)\)/gi;
   //contiene los links
   const fileLinks = readFile(pathAbsolut).match(regExp);
-  // retorna links encontrados
+  // retorna links encontrados, es un arr
   const newFilelinks = fileLinks.map((links) => {
     const textLink = /\[[^\s]+(.+?)\]/gi;
     const matchText = links.match(textLink);
@@ -79,6 +78,22 @@ const validateLinks = (arrayObjetos) => {
   });
   return Promise.all(arrayPromesas);
 };
+validateLinks(getArrayObjects).then((result)=> {
+// console.log(result);
+})
+const stats = (arrayObjects) => {
+  const arraylinks = arrayObjects.map((objcts)=>{
+    return objcts.href
+  });
+// console.log(arraylinks.length);
+const arrayUnics = [];
+  if(!arrayUnics.includes(arraylinks)){
+    const getLinksUnics= arrayUnics.push(arraylinks);
+    console.log(getLinksUnics);
+}
+}
+stats(getArrayObjects)
+
 
 module.exports = {
   getAbsolutePath,

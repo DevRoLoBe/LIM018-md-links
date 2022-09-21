@@ -1,9 +1,5 @@
-const { default: jestHoist } = require("babel-plugin-jest-hoist");
 const { getAbsolutePath,validateLinks } = require("../funciones.js");
 const fetch = require("node-fetch");
-const { describe } = require("yargs");
-const { it } = require("jest-circus");
-
 jest.mock("node-fetch");
 
 describe("getAbsolutePath()", () => {
