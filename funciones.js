@@ -8,10 +8,12 @@ const ejmpRut = "./miReadme.md";
  * @param {string} paths: the file ath to verify
  * @returns {boolean} if the file path exist or not
  */
+// Comprueba que el archivo exista
 const pathExists = (paths) => {
   return fs.existsSync(paths);
 };
 
+// Verifica que el archivo sea un directorio
 const filePathIsDirectory = (filePath) => {
   return fs.statSync(filePath).isDirectory();
 };
@@ -24,6 +26,7 @@ const getAbsolutePath = (pathToResolve) => {
 };
 // console.log(pathExists(ejmpRut))
 
+// Validamos que el archivo sea de extención .md
 const isMd = (paths) => {
   const pathMd = path.extname(paths);
   if (pathMd == ".md") {
@@ -32,14 +35,18 @@ const isMd = (paths) => {
   return false;
 };
 // console.log(isMd(path, {validate: false, stats: true}));
-const readFile = (file) => {
-  return fs.readFileSync(file, "utf-8");
-};
 
 const extractLinks = (pathAbsolut) => {
   const regExp = /\[(.+)\]\((https?:\/\/.+)\)/gi;
+  const readfile = fs.readFileSync(pathAbsolut, "utf8");
   //contiene los links
-  const fileLinks = readFile(pathAbsolut).match(regExp);
+  const fileLinks = readfile.match(regExp);
+  if (readfile === "") {
+    return [];
+  }
+  if (fileLinks === null) {
+    return [];
+  }
   // retorna links encontrados, es un arr
   const newFilelinks = fileLinks.map((links) => {
     const textLink = /\[[^\s]+(.+?)\]/gi;
@@ -78,28 +85,41 @@ const validateLinks = (arrayObjetos) => {
   });
   return Promise.all(arrayPromesas);
 };
-validateLinks(getArrayObjects).then((result)=> {
-// console.log(result);
-})
-const stats = (arrayObjects) => {
-  const arraylinks = arrayObjects.map((objcts)=>{
-    return objcts.href
+const arrayDFiveObjcts = validateLinks(getArrayObjects).then((result) => {
+  return result;
+});
+
+const statsLinks = (arrayObjects) => {
+  const arraylinks = arrayObjects.map((objcts) => {
+    return objcts.href;
   });
-// console.log(arraylinks.length);
-const arrayUnics = [];
-  if(!arrayUnics.includes(arraylinks)){
-    const getLinksUnics= arrayUnics.push(arraylinks);
-    console.log(getLinksUnics);
-}
-}
-stats(getArrayObjects)
-
-
+  // console.log(arraylinks.length);
+  const totalLinks = arraylinks.length;
+  // console.log(totalLinks);
+  const arrayUnics = [];
+  arraylinks.forEach((objcts) => {
+    if (!arrayUnics.includes(objcts)) {
+      arrayUnics.push(objcts);
+      console.log(arrayUnics);
+    }
+  });
+  return { totalLinks, arrayUnics: arrayUnics.length };
+};
+const brokenLinks = (arrayObjects) => {
+  return arrayObjects.then((objLinks) => {
+    const linksFilters = objLinks.filter((link) => {
+      return link.message === "fail";
+    });
+    return linksFilters.length;
+  });
+};
+brokenLinks(arrayDFiveObjcts);
 module.exports = {
   getAbsolutePath,
   isMd,
-  readFile,
+  statsLinks,
   extractLinks,
   validateLinks,
   pathExists,
+  brokenLinks,
 };

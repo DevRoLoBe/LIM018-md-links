@@ -261,8 +261,12 @@
     "url": "git+https://github.com/DevRoLoBe/LIM018-md-links.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Roxana Lopez ",
   "license": "ISC",
+  "bin": {
+    "md-links": "./cli.js"
+  },
+
   "bugs": {
     "url": "https://github.com/DevRoLoBe/LIM018-md-links/issues"
   },

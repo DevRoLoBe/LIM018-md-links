@@ -1,6 +1,6 @@
-const fn = (url) => {
+const fetch = jest.fn( (url) => {
   //devueve una promesa
-  
-console.log(url);
-}
-module.exports = fn;
+
+  return Promise.resolve({});
+})
+module.exports = fetch;

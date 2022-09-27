@@ -2,6 +2,7 @@ const { getAbsolutePath,validateLinks } = require("../funciones.js");
 const fetch = require("node-fetch");
 jest.mock("node-fetch");
 
+// fetch ("hola")
 describe("getAbsolutePath()", () => {
   it("si se le pasa una ruta absoluta retorna la misma ruta", () => {
     // DADO
