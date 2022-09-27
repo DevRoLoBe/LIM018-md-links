@@ -33,9 +33,9 @@ const mdlinks = (path, options) => {
   });
 };
 
-mdlinks("./miReadme.md", {validate: true}).then((result) => {
-  console.log(result);
-});
+// mdlinks("./miReadme.md", {validate: true}).then((result) => {
+//   console.log(result);
+// });
 module.exports = mdlinks;
 
 
