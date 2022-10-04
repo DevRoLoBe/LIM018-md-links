@@ -14,7 +14,7 @@ const pathExists = (paths) => {
 };
 
 // Verifica que el archivo sea un directorio
-const filePathIsDirectory = (filePath) => {
+const fileIsDirectory = (filePath) => {
   return fs.statSync(filePath).isDirectory();
 };
 // Lee el directorio
@@ -38,20 +38,23 @@ const isMd = (pathAbsolut) => {
 };
 // console.log(isMd(path, {validate: false, stats: true}));
 // Filtra archivos desde un array
-const fileOrDirectory =  (pathContent, pathDir, result) => {
+const fileOrDirectory = (pathContent, pathDir) => {
+  const result = [];
   for (let i = 0; i < pathContent.length; i++) {
     const absolutePath = path.join(pathDir, pathContent[i]);
 
     if (!isDirectory(absolutePath)) {
       result.push(absolutePath);
     } else {
-      fileOrDirectory(readDir(absolutePath), absolutePath, result);
+      const subDirs = fileOrDirectory(readDir(absolutePath), absolutePath);
+      result.concat(subDirs);
     }
   }
+  console.log(result,'siii');
   return result;
 };
 // Filtra rutas con la extención .md
-const filterPathsMd = (paths) =>{
+const filterPathsMd = (paths) => {
   return paths.filter((paths) => {
     return isMd(paths) === true;
   });
@@ -59,20 +62,20 @@ const filterPathsMd = (paths) =>{
 // lee  archivos
 const readFile = (pathsMd) => {
   if (!Array.isArray(pathsMd)) {
-    return fs.readFileSync(pathsMd, 'utf-8');
+    return fs.readFileSync(pathsMd, "utf-8");
   }
   return pathsMd.map((path) => {
-    return fs.readFileSync(path, 'utf-8');
+    return fs.readFileSync(path, "utf-8");
   });
 };
 
 // Exrtrae link de los archivos
-const extractLinks =(fileRead, pathMd) => {
+const extractLinks = (fileRead, pathMd) => {
   const regExp = /\[(.+)\]\((https?:\/\/.+)\)/gi;
   // const readfile = fs.readFileSync(pathAbsolut, "utf8");
   //contiene los links
   const fileLinks = fileRead.match(regExp);
-  if (fileRead === '') {
+  if (fileRead === "") {
     return [];
   }
   if (fileLinks === null) {
@@ -138,15 +141,15 @@ const statsLinks = (arrayObjects) => {
 // links rotos
 const brokenLinks = (ValidateLink) => {
   return ValidateLink.filter((link) => {
-      return link.message === "fail";
-    }).length;
+    return link.message === "fail";
+  }).length;
 };
 
 // brokenLinks(arrayDFiveObjcts);
 module.exports = {
   pathExists,
   getAbsolutePath,
-  filePathIsDirectory,
+  fileIsDirectory,
   readDirectory,
   isMd,
   filterPathsMd,

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-// const { statsLinks, brokenLinks} = require('./funciones');
 const chalk = require('chalk');
-const { statsLinks } = require('./funciones.js');
+const { statsLinks, brokenLinks} = require('./funciones');
 
 const mdLinks = require('./index.js');
 // argv[0] = ruta de node
@@ -17,22 +16,56 @@ const pathSimple = argv.filter((element) => {
 });
 const validate = argv.includes('--validate');
 const stats = argv.includes('--stats');
+const help = argv.includes('--help');
+if (pathSimple.length === 0) {
+  console.log('Porfavor ingrese una ruta o archivo que desea analizar');
+  console.log('** Para mayor información escriba --help, para revisar las distintas opciones **');
+}
+if (help && !stats && !validate) {
+  console.log(`
+   ☺☺☺☺☺ OPCIONES ☺☺☺☺☺
+  💨 md-links ${chalk.green('<path>')} ${chalk.red('=>')} Path hace referencia al archivo o directorio que desees analizar.
+  💨 md-links <path> ${chalk.green('--validate')} ${chalk.red('=>')} Esta opción se hace la petición HTTP.
+  💨 md-links <path> ${chalk.green('--stats')} ${chalk.red('=>')} Esta opción obtendra las estadísticas de los links encontrados, como el total de links y los links unicos.
+  💨 md-links <path> ${chalk.green('--validate --stats')} o ${chalk.green('--stats --validate')} ${chalk.red('=>')} Esta opción obtendra las estadísticas de los links encontrados, como el total de links, los links unicos y links rotos.
+  💨 md-links ${chalk.green('--help')} ${chalk.red('=>')} Muestra informacion acerca de las distintas opciones.
+
+  ${chalk.cyan('♥ by DevRoLoBe ♥')}
+  `);
+}
 pathSimple.forEach((path) => {
+  if(!stats && !help){
   mdLinks(path, { validate })
     .then((result) => {
-      // console.log(result, 'anais');
+      console.log(result);
     })
     .catch(() => {
-      console.log('Ingrese una ruta valida');
+      console.log(chalk.red.bold('Ingrese una ruta o directorio valida por favor!');
     });
-});
-
-if (stats ){
-  pathSimple.map((e) => {
-    return mdLinks(e, { validate })
+  }
+if (stats && !validate) {
+  mdLinks(path, { validate })
       .then((result) => {
-      const r = result
-        console.log(statsLinks(r), 'juana');
+        console.log(statsLinks(result));
+        console.log('Total de links: ',chalk.green(statsLinks(result).totalLinks));
+        console.log('Links Unicos: ', chalk.green(statsLinks(result).uniqueLinks));
       });
-  });
-}
+    }
+if (stats && validate) {
+  mdLinks(path, { validate })
+      .then((result) => {
+        console.log('Total de Links:', statsLinks(result).totalLinks);
+        console.log('Links Unicos:', statsLinks(result).uniqueLinks);
+        console.log('Links Rotos: ', brokenLinks(result));
+      });
+  }
+});
+// statsLinks(path)
+// .then((obj) => {
+//   console.log(chalk.blue.italic('Links Totales: ', chalk.green(obj.totalLinks)));
+//   console.log(chalk.blue.italic('Links Unicos: ', chalk.green(obj.uniqueLinks)));
+// });
+// brokenLinks(path)
+// .then((result) => {
+//   console.log(chalk.red.italic('Links Rotos: ', chalk.red(result)));
+// });

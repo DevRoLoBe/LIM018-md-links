@@ -1,16 +1,21 @@
 const {
+  pathExists,
   getAbsolutePath,
+  fileIsDirectory,
+  readDirectory,
   isMd,
-  statsLinks,
+  filterPathsMd,
+  readFile,
+  fileOrDirectory,
   extractLinks,
   validateLinks,
-  pathExists,
 } = require("./funciones.js");
 
 const mdlinks = (path, options) => {
   return new Promise((resolve, reject) => {
-    let links = [];
-    if (!pathExists(path)) {
+    // let links = [];
+    if (!fileIsDirectory(path)) {
+      if(pathExists(path)) {
       reject(new Error("La ruta ingresada no existe"));
     }
     // chequear que la ruta sea absoluta
@@ -20,22 +25,33 @@ const mdlinks = (path, options) => {
     if (!isMd(absolut)) {
       reject(new Error("No se encontró archivos con extencion .md"));
     }
-    const arrayObjects = extractLinks(absolut);
-    // if (readFile(path)) {
-    //   reject(new Error("No se puede leer el archivo"));
-    // }
+    const fileRead = readFile(absolut);
+    const extract = extractLinks(fileRead, absolut);
     if(!options.validate){
-      links = arrayObjects;
-      resolve(links);
+      resolve(extract);
     }
-    links = validateLinks(arrayObjects);
-    resolve (links);
+    resolve(validateLinks(extract));
+  }
+  const routeAbsolute = getAbsolutePath(path);
+  const readDir = readDirectory(routeAbsolute);
+  const fileOrDir = fileOrDirectory(readDir, routeAbsolute, []);
+  const routeMd = filterPathsMd(fileOrDir);
+  const arrays = [];
+  routeMd.forEach((md) => {
+    const read = readFile(md);
+    const extract = extractLinks(read, md);
+    arrays.push(extract);
+  });
+  const arrUnido = arrays.flat();
+  if (!options.validate) {
+    resolve(arrUnido);
+  }
+  resolve(validateLinks(arrUnido));
   });
 };
-
-mdlinks("./miReadme.md", {validate: true}).then((result) => {
-  console.log(result);
-});
+// mdlinks("./miReadme.md", {validate: true}).then((result) => {
+//   console.log(result);
+// });
 module.exports = mdlinks;
 
 
