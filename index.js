@@ -15,8 +15,8 @@ const mdlinks = (path, options) => {
   return new Promise((resolve, reject) => {
     // let links = [];
     if (!fileIsDirectory(path)) {
-      if(pathExists(path)) {
-      reject(new Error("La ruta ingresada no existe"));
+      if(!pathExists(path)) {
+      reject('La ruta ingresada no existe!');
     }
     // chequear que la ruta sea absoluta
     const absolut = getAbsolutePath(path);

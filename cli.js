@@ -40,32 +40,24 @@ pathSimple.forEach((path) => {
       console.log(result);
     })
     .catch(() => {
-      console.log(chalk.red.bold('Ingrese una ruta o directorio valida por favor!');
+      console.log(chalk.red.bold('la ruta ingresada no existe'));
     });
   }
 if (stats && !validate) {
   mdLinks(path, { validate })
       .then((result) => {
-        console.log(statsLinks(result));
+        // console.log(statsLinks(result));
         console.log('Total de links: ',chalk.green(statsLinks(result).totalLinks));
-        console.log('Links Unicos: ', chalk.green(statsLinks(result).uniqueLinks));
+        console.log('Links Unicos: ', chalk.green(statsLinks(result).arrayUnics));
       });
     }
 if (stats && validate) {
   mdLinks(path, { validate })
       .then((result) => {
         console.log('Total de Links:', statsLinks(result).totalLinks);
-        console.log('Links Unicos:', statsLinks(result).uniqueLinks);
+        console.log('Links Unicos:', statsLinks(result).arrayUnics);
         console.log('Links Rotos: ', brokenLinks(result));
       });
   }
 });
-// statsLinks(path)
-// .then((obj) => {
-//   console.log(chalk.blue.italic('Links Totales: ', chalk.green(obj.totalLinks)));
-//   console.log(chalk.blue.italic('Links Unicos: ', chalk.green(obj.uniqueLinks)));
-// });
-// brokenLinks(path)
-// .then((result) => {
-//   console.log(chalk.red.italic('Links Rotos: ', chalk.red(result)));
-// });
+
